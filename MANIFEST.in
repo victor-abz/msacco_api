@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include msacco_api *.css
+recursive-include msacco_api *.csv
+recursive-include msacco_api *.html
+recursive-include msacco_api *.ico
+recursive-include msacco_api *.js
+recursive-include msacco_api *.json
+recursive-include msacco_api *.md
+recursive-include msacco_api *.png
+recursive-include msacco_api *.py
+recursive-include msacco_api *.svg
+recursive-include msacco_api *.txt
+recursive-exclude msacco_api *.pyc
