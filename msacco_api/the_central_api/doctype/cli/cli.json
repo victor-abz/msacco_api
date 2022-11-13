@@ -1,0 +1,92 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2022-11-12 16:42:44.783122",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "id_client",
+  "anc_id_client",
+  "statut_juridique",
+  "num_tel",
+  "email",
+  "id_cpte_base",
+  "pp_nm_piece_id",
+  "pp_nom",
+  "pp_prenom"
+ ],
+ "fields": [
+  {
+   "fieldname": "id_client",
+   "fieldtype": "Data",
+   "label": "Id Client"
+  },
+  {
+   "fieldname": "anc_id_client",
+   "fieldtype": "Data",
+   "label": "Ancient ID Client"
+  },
+  {
+   "fieldname": "statut_juridique",
+   "fieldtype": "Data",
+   "label": "Statut Juridique"
+  },
+  {
+   "fieldname": "num_tel",
+   "fieldtype": "Data",
+   "label": "Num Tel"
+  },
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "email"
+  },
+  {
+   "fieldname": "id_cpte_base",
+   "fieldtype": "Data",
+   "label": "id_cpte_base"
+  },
+  {
+   "fieldname": "pp_nm_piece_id",
+   "fieldtype": "Data",
+   "label": "pp_nm_piece_id"
+  },
+  {
+   "fieldname": "pp_nom",
+   "fieldtype": "Data",
+   "label": "Nom"
+  },
+  {
+   "fieldname": "pp_prenom",
+   "fieldtype": "Data",
+   "label": "prenom"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_virtual": 1,
+ "links": [],
+ "modified": "2022-11-12 16:42:44.783122",
+ "modified_by": "Administrator",
+ "module": "The Central API",
+ "name": "cli",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
