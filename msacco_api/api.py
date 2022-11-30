@@ -1,3 +1,5 @@
+import json
+
 import frappe
 import requests
 
@@ -74,24 +76,36 @@ def check_connection():
         debug=True,
     )
 
-    print(
-        # accounts_in_mob_banking,
-        total_to_transfer,
-        accounts_in_mob_banking,
-        len(balances_to_transfer),
-        len(accounts_in_mob_banking),
+    # Get Total compulsor sum to be transferred
+    comp_balance_before_transfer = frappe.cbs_db.get_values(
+        "ad_cpt",
+        filters={
+            "solde": [">", "0"],
+            "etat_cpte": 1,
+            "id_prod": 7,
+            "id_titulaire": ["not in", accounts_in_mob_banking],
+        },
+        fieldname=["sum(solde)"],
+        as_dict=1,
+        debug=True,
     )
 
     # Get Full Account No:
+    logs = frappe.new_doc("Savings migration Logs")
 
-    url = "http://10.0.0.120/api/v1/client/transfert/compte"
+    logs.total_to_transfer = total_to_transfer[0].sum
+    logs.total_accounts_to_transfer = len(balances_to_transfer)
+
+    logs.comp_balance_before = comp_balance_before_transfer[0].sum
+
+    total_account_transfered = 0
+    total_transferred = 0
+    url = f'http://{frappe.conf.get("api_url")}/api/v1/client/transfert/compte'
 
     # Do the Transfer
     for account in balances_to_transfer:
         # Format ID Client to 8 digits with Agence ID
         identifiant_client = f'1{f"{account.id_titulaire}".zfill(ID_CLIENT_LENGTH)}'
-
-        print(identifiant_client, account)
 
         # Get num Compulsory
         compulsory = frappe.cbs_db.get_values(
@@ -99,20 +113,18 @@ def check_connection():
             filters={
                 "solde": [">", "0"],
                 "etat_cpte": 1,
-                "id_prod": 2,
+                "id_prod": 7,
                 "id_titulaire": account.id_titulaire,
             },
-            fieldname=["num_complet_cpte"],
+            fieldname=["num_complet_cpte", "solde"],
             order_by="id_titulaire asc",
             as_dict=1,
             debug=True,
-            pluck="id_client",
         )
-        print("??????", compulsory)
         if not compulsory or len(compulsory) > 1:
             # log clients withtout compulsory
             continue
-        num_compte_cible = compulsory[0]
+        num_compte_cible = compulsory[0].num_complet_cpte
 
         payload = {
             "identifiant_client": identifiant_client,
@@ -123,10 +135,9 @@ def check_connection():
             "montant": account.solde,
             "libelle": "Try Transfer",
             "num_complet_compte_source": account.num_complet_cpte,
-            "type_operation": "25",
+            "type_operation": "120",
         }
 
-        files = []
         response = requests.request(
             "POST",
             url,
@@ -138,28 +149,93 @@ def check_connection():
                 ),
             },
             data=payload,
-            files=files,
         )
 
         # Log response
-        print(response.text)
+        json_response = response.json()
+        print(json_response)
 
         # Get transfer Balances
         balances = frappe.cbs_db.get_values(
             "ad_cpt",
             filters={
                 "etat_cpte": 1,
-                "id_prod": ["in", [1, 2]],
+                "id_prod": ["in", [1, 7]],
                 "id_titulaire": account.id_titulaire,
             },
-            fieldname=["solde", "id_titulaire"],
+            fieldname=["solde", "id_titulaire", "id_prod"],
             order_by="id_titulaire asc",
             as_dict=1,
             debug=True,
         )
 
+        from_bal = [x["solde"] for x in balances if x["id_prod"] == 1][0]
+        to_bal = [x["solde"] for x in balances if x["id_prod"] == 7][0]
+
+        logs.append(
+            "transfer_logs",
+            {
+                "id_client": account.id_titulaire,
+                "formatted_id_client": identifiant_client,
+                "transfer_acct_no": account.num_complet_cpte,
+                "transfer_account_id": account.id_cpte,
+                "amount_to_transfer": account.solde,
+                "balance_before_transfer": account.solde,
+                "balance_after_transfer": from_bal,
+                "receiving_account_id": num_compte_cible,
+                "receiving_acct_balance_before_transfer": compulsory[0].solde,
+                "receiving_acct_balance_after_transfer": to_bal,
+                "request_body": json.dumps(payload),
+                "transfer_api_success": 1 if json_response["success"] else 0,
+                "transfer_api_code": response.status_code,
+                "transfer_api_response": json.dumps(json_response),
+            },
+        )
+
+        if json_response["success"]:
+            total_account_transfered += 1
+            total_transferred += account.solde
+
         # Log the Balances
 
         break
+
+    total_after_transfer = frappe.cbs_db.get_values(
+        "ad_cpt",
+        filters={
+            "solde": [">", "0"],
+            "etat_cpte": 1,
+            "id_prod": 1,
+            "id_titulaire": ["not in", accounts_in_mob_banking],
+        },
+        fieldname=["sum(solde)"],
+        as_dict=1,
+        debug=True,
+    )
+
+    # Get Total sum to be transferred
+    comp_balance_after_transfer = frappe.cbs_db.get_values(
+        "ad_cpt",
+        filters={
+            "solde": [">", "0"],
+            "etat_cpte": 1,
+            "id_prod": 7,
+            "id_titulaire": ["not in", accounts_in_mob_banking],
+        },
+        fieldname=["sum(solde)"],
+        as_dict=1,
+        debug=True,
+    )
+
+    logs.total_transferred = total_transferred
+    logs.total_account_transfered = total_account_transfered
+    logs.balance_after_transfer = total_after_transfer[0].sum
+    logs.comp_balance_after_transfer = comp_balance_after_transfer[0].sum
+
+    logs.epargne_diff = total_after_transfer[0].sum - total_to_transfer[0].sum
+    logs.comp_diff = (
+        comp_balance_after_transfer[0].sum - comp_balance_before_transfer[0].sum
+    )
+    logs.insert()
 
     root_conn.close()

@@ -28,92 +28,115 @@
   {
    "fieldname": "balance_before_transfer",
    "fieldtype": "Currency",
-   "label": "Sending Acct Balance before Transfer"
+   "label": "Sending Acct Balance before Transfer",
+   "read_only": 1
   },
   {
    "fieldname": "balance_after_transfer",
    "fieldtype": "Currency",
-   "label": "Sending Acct Balance After Transfer"
+   "label": "Sending Acct Balance After Transfer",
+   "read_only": 1
   },
   {
    "fieldname": "transfer_api_response",
    "fieldtype": "JSON",
-   "label": "Transfer API Response"
+   "label": "Transfer API Response",
+   "read_only": 1
   },
   {
    "default": "0",
    "fieldname": "transfer_api_success",
    "fieldtype": "Check",
-   "label": "Transfer API Success"
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Transfer API Success",
+   "read_only": 1
   },
   {
    "fieldname": "transfer_api_code",
    "fieldtype": "Int",
-   "label": "Transfer API Code"
+   "label": "Transfer API Code",
+   "read_only": 1
   },
   {
    "fieldname": "amount_to_transfer",
    "fieldtype": "Data",
-   "label": "Amount to Transfer"
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Amount to Transfer",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_6",
-   "fieldtype": "Column Break"
+   "fieldtype": "Column Break",
+   "read_only": 1
   },
   {
    "fieldname": "receiving_account_id",
    "fieldtype": "Data",
-   "label": "Receiving Acct No"
+   "label": "Receiving Acct No",
+   "read_only": 1
   },
   {
    "fieldname": "receiving_acct_balance_before_transfer",
    "fieldtype": "Data",
-   "label": "Receiving Acct Balance Before Transfer"
+   "label": "Receiving Acct Balance Before Transfer",
+   "read_only": 1
   },
   {
    "fieldname": "receiving_acct_balance_after_transfer",
    "fieldtype": "Data",
-   "label": "Receiving Acct Balance After Transfer"
+   "label": "Receiving Acct Balance After Transfer",
+   "read_only": 1
   },
   {
    "fieldname": "tab_break_10",
    "fieldtype": "Tab Break",
-   "label": "Transfer API Details"
+   "label": "Transfer API Details",
+   "read_only": 1
   },
   {
    "fieldname": "id_client",
    "fieldtype": "Data",
-   "label": "ID Client"
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "ID Client",
+   "read_only": 1
   },
   {
    "fieldname": "formatted_id_client",
    "fieldtype": "Data",
-   "label": "Formatted ID Client"
+   "label": "Formatted ID Client",
+   "read_only": 1
   },
   {
    "fieldname": "transfer_acct_no",
    "fieldtype": "Data",
-   "label": "Transfer Acct No"
+   "label": "Transfer Acct No",
+   "read_only": 1
   },
   {
    "fieldname": "transfer_account_id",
    "fieldtype": "Data",
-   "label": "Transfer Account ID"
+   "label": "Transfer Account ID",
+   "read_only": 1
   },
   {
    "fieldname": "request_body",
    "fieldtype": "JSON",
-   "label": "Request Body"
+   "label": "Request Body",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_14",
-   "fieldtype": "Column Break"
+   "fieldtype": "Column Break",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2022-11-15 16:25:33.225037",
+ "modified": "2022-11-30 11:26:55.921001",
  "modified_by": "Administrator",
  "module": "The Central API",
  "name": "Transfer Logs",

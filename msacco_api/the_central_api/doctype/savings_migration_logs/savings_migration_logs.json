@@ -7,12 +7,18 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "total_to_transfer",
   "total_accounts_to_transfer",
   "column_break_3",
-  "total_transferred",
   "total_account_transfered",
+  "total_transferred",
+  "section_break_5",
+  "total_to_transfer",
   "balance_after_transfer",
+  "epargne_diff",
+  "column_break_8",
+  "comp_balance_before",
+  "comp_balance_after_transfer",
+  "comp_diff",
   "transfer_logs_section",
   "transfer_logs"
  ],
@@ -20,27 +26,35 @@
   {
    "fieldname": "total_to_transfer",
    "fieldtype": "Currency",
-   "label": "Total To transfer"
+   "label": "[Epargne Libre] Total To transfer",
+   "options": "Rwf",
+   "read_only": 1
   },
   {
    "fieldname": "total_accounts_to_transfer",
    "fieldtype": "Int",
-   "label": "Total Accounts to transfer"
+   "label": "Total Accounts to transfer",
+   "read_only": 1
   },
   {
    "fieldname": "total_transferred",
    "fieldtype": "Currency",
-   "label": "Total transferred"
+   "label": "Total transferred",
+   "options": "Rwf",
+   "read_only": 1
   },
   {
    "fieldname": "total_account_transfered",
    "fieldtype": "Int",
-   "label": "Total Account Transfered"
+   "label": "Total Account Transfered",
+   "read_only": 1
   },
   {
    "fieldname": "balance_after_transfer",
    "fieldtype": "Currency",
-   "label": "Balance After Transfer"
+   "label": "[Epargne Libre] Balance After Transfer",
+   "options": "Rwf",
+   "read_only": 1
   },
   {
    "fieldname": "transfer_logs_section",
@@ -56,11 +70,46 @@
    "fieldtype": "Table",
    "label": "Transfer Logs",
    "options": "Transfer Logs"
+  },
+  {
+   "fieldname": "section_break_5",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_8",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "comp_balance_before",
+   "fieldtype": "Currency",
+   "label": "[Compulsory] Balance Before Transfer",
+   "options": "Rwf",
+   "read_only": 1
+  },
+  {
+   "fieldname": "comp_balance_after_transfer",
+   "fieldtype": "Currency",
+   "label": "[Compulsory] Balance After Transfer",
+   "options": "Rwf",
+   "read_only": 1
+  },
+  {
+   "fieldname": "epargne_diff",
+   "fieldtype": "Currency",
+   "label": "[Epargne Libre] Epargne Difference",
+   "read_only": 1
+  },
+  {
+   "fieldname": "comp_diff",
+   "fieldtype": "Currency",
+   "label": "[Compulsory] Difference",
+   "options": "Rwf",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2022-11-15 16:17:46.751528",
+ "modified": "2022-11-30 11:47:34.232254",
  "modified_by": "Administrator",
  "module": "The Central API",
  "name": "Savings migration Logs",
