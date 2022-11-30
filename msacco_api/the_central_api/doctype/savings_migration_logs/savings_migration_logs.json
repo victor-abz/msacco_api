@@ -1,0 +1,85 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2022-11-15 16:13:36.673010",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "total_to_transfer",
+  "total_accounts_to_transfer",
+  "column_break_3",
+  "total_transferred",
+  "total_account_transfered",
+  "balance_after_transfer",
+  "transfer_logs_section",
+  "transfer_logs"
+ ],
+ "fields": [
+  {
+   "fieldname": "total_to_transfer",
+   "fieldtype": "Currency",
+   "label": "Total To transfer"
+  },
+  {
+   "fieldname": "total_accounts_to_transfer",
+   "fieldtype": "Int",
+   "label": "Total Accounts to transfer"
+  },
+  {
+   "fieldname": "total_transferred",
+   "fieldtype": "Currency",
+   "label": "Total transferred"
+  },
+  {
+   "fieldname": "total_account_transfered",
+   "fieldtype": "Int",
+   "label": "Total Account Transfered"
+  },
+  {
+   "fieldname": "balance_after_transfer",
+   "fieldtype": "Currency",
+   "label": "Balance After Transfer"
+  },
+  {
+   "fieldname": "transfer_logs_section",
+   "fieldtype": "Section Break",
+   "label": "Transfer Logs Section"
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "transfer_logs",
+   "fieldtype": "Table",
+   "label": "Transfer Logs",
+   "options": "Transfer Logs"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2022-11-15 16:17:46.751528",
+ "modified_by": "Administrator",
+ "module": "The Central API",
+ "name": "Savings migration Logs",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

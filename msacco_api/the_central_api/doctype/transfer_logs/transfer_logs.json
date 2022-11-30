@@ -1,0 +1,126 @@
+{
+ "actions": [],
+ "autoname": "autoincrement",
+ "creation": "2022-11-15 16:16:49.972546",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "id_client",
+  "formatted_id_client",
+  "transfer_acct_no",
+  "transfer_account_id",
+  "amount_to_transfer",
+  "balance_before_transfer",
+  "balance_after_transfer",
+  "column_break_6",
+  "receiving_account_id",
+  "receiving_acct_balance_before_transfer",
+  "receiving_acct_balance_after_transfer",
+  "tab_break_10",
+  "request_body",
+  "column_break_14",
+  "transfer_api_success",
+  "transfer_api_code",
+  "transfer_api_response"
+ ],
+ "fields": [
+  {
+   "fieldname": "balance_before_transfer",
+   "fieldtype": "Currency",
+   "label": "Sending Acct Balance before Transfer"
+  },
+  {
+   "fieldname": "balance_after_transfer",
+   "fieldtype": "Currency",
+   "label": "Sending Acct Balance After Transfer"
+  },
+  {
+   "fieldname": "transfer_api_response",
+   "fieldtype": "JSON",
+   "label": "Transfer API Response"
+  },
+  {
+   "default": "0",
+   "fieldname": "transfer_api_success",
+   "fieldtype": "Check",
+   "label": "Transfer API Success"
+  },
+  {
+   "fieldname": "transfer_api_code",
+   "fieldtype": "Int",
+   "label": "Transfer API Code"
+  },
+  {
+   "fieldname": "amount_to_transfer",
+   "fieldtype": "Data",
+   "label": "Amount to Transfer"
+  },
+  {
+   "fieldname": "column_break_6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "receiving_account_id",
+   "fieldtype": "Data",
+   "label": "Receiving Acct No"
+  },
+  {
+   "fieldname": "receiving_acct_balance_before_transfer",
+   "fieldtype": "Data",
+   "label": "Receiving Acct Balance Before Transfer"
+  },
+  {
+   "fieldname": "receiving_acct_balance_after_transfer",
+   "fieldtype": "Data",
+   "label": "Receiving Acct Balance After Transfer"
+  },
+  {
+   "fieldname": "tab_break_10",
+   "fieldtype": "Tab Break",
+   "label": "Transfer API Details"
+  },
+  {
+   "fieldname": "id_client",
+   "fieldtype": "Data",
+   "label": "ID Client"
+  },
+  {
+   "fieldname": "formatted_id_client",
+   "fieldtype": "Data",
+   "label": "Formatted ID Client"
+  },
+  {
+   "fieldname": "transfer_acct_no",
+   "fieldtype": "Data",
+   "label": "Transfer Acct No"
+  },
+  {
+   "fieldname": "transfer_account_id",
+   "fieldtype": "Data",
+   "label": "Transfer Account ID"
+  },
+  {
+   "fieldname": "request_body",
+   "fieldtype": "JSON",
+   "label": "Request Body"
+  },
+  {
+   "fieldname": "column_break_14",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2022-11-15 16:25:33.225037",
+ "modified_by": "Administrator",
+ "module": "The Central API",
+ "name": "Transfer Logs",
+ "naming_rule": "Autoincrement",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

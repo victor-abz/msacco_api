@@ -11,7 +11,6 @@ from contextlib import contextmanager
 from time import time
 
 import frappe
-import msacco_api
 import frappe.defaults
 import frappe.model.meta
 from frappe import _
@@ -22,6 +21,7 @@ from frappe.utils import get_datetime, get_table_name, getdate, now, sbool
 from pypika.dialects import MySQLQueryBuilder, PostgreSQLQueryBuilder
 from pypika.terms import Criterion, NullValue
 
+import msacco_api
 from msacco_api.database.utils import (
     EmptyQueryValues,
     FallBackDateTimeStr,
@@ -116,8 +116,8 @@ class CBSDatabase:
         port=None,
     ):
         self.setup_type_map()
-        self.host = host or frappe.conf.db_host or "127.0.0.1"
-        self.port = port or frappe.conf.db_port or ""
+        self.host = host or frappe.conf.corebanking_db_host or "127.0.0.1"
+        self.port = port or frappe.conf.corebanking_db_port or ""
         self.user = user
         self.db_name = frappe.conf.corebanking_db_name
         self._conn = None
@@ -620,6 +620,7 @@ class CBSDatabase:
                 limit=limit,
                 as_dict=as_dict,
             )
+        
 
         else:
             fields = fieldname
@@ -629,11 +630,10 @@ class CBSDatabase:
 
             # if (filters is not None) and (filters != doctype or doctype == "DocType"):
             try:
+
                 if order_by:
                     order_by = (
-                        "modified"
-                        if order_by == "KEEP_DEFAULT_ORDERING"
-                        else order_by
+                        "modified" if order_by == "KEEP_DEFAULT_ORDERING" else order_by
                     )
                 out = self._get_values_from_table(
                     fields=fields,
@@ -698,6 +698,8 @@ class CBSDatabase:
             and not isinstance(fields, Criterion)
         ):
             as_dict = True
+        
+        print(query)
 
         return query.run(
             as_dict=as_dict, debug=debug, update=update, run=run, pluck=pluck
@@ -983,6 +985,7 @@ class CBSDatabase:
 
             values_to_insert = values[start_index : start_index + chunk_size]
             query.columns(fields).insert(*values_to_insert).run()
+
 
 def enqueue_jobs_after_commit():
     from frappe.utils.background_jobs import (
