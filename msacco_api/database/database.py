@@ -131,7 +131,7 @@ class CBSDatabase:
         self.transaction_writes = 0
         self.auto_commit_on_many_writes = 0
 
-        self.password = password or frappe.conf.db_password
+        self.password = password
         self.value_cache = {}
         # self.db_type: str
         # self.last_query (lazy) attribute of last sql query executed
@@ -319,7 +319,6 @@ class CBSDatabase:
 
         if frappe.conf.allow_tests and frappe.cache().get_value("flag_print_sql"):
             _query = _query or str(mogrified_query)
-            print(_query)
 
         if debug:
             _query = _query or str(mogrified_query)
@@ -620,7 +619,6 @@ class CBSDatabase:
                 limit=limit,
                 as_dict=as_dict,
             )
-        
 
         else:
             fields = fieldname
@@ -698,9 +696,6 @@ class CBSDatabase:
             and not isinstance(fields, Criterion)
         ):
             as_dict = True
-        
-        print(query)
-
         return query.run(
             as_dict=as_dict, debug=debug, update=update, run=run, pluck=pluck
         )

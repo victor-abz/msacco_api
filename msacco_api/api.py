@@ -30,7 +30,9 @@ def get_cbs_root_connection(root_login, root_password):
 
 
 def check_connection():
-    root_conn = get_cbs_root_connection("victor", "123456")
+    root_conn = get_cbs_root_connection(
+        frappe.conf.get("corebanking_db_username"), frappe.conf.get("corebanking_db_pw")
+    )
     frappe.cbs_db = root_conn
     # print(root_conn.describe('ad_cli'))
     # print(root_conn.sql("SELECT * FROM ad_cli WHERE id_client = '10931'", as_dict=1))
@@ -40,6 +42,7 @@ def check_connection():
     # get all current accounts balance greater than 0
 
     # Accounts in Mobile Bankings have their balance already transferred
+    # print(frappe.cbs_qb)
     accounts_in_mob_banking = frappe.cbs_db.get_values(
         "ad_abonnement",
         fieldname=["id_client"],
@@ -47,6 +50,8 @@ def check_connection():
         as_dict=1,
         pluck="id_client",
     )
+    frappe.cbs_db.commit()
+    # print(",.<>")
 
     balances_to_transfer = frappe.cbs_db.get_values(
         "ad_cpt",
@@ -59,8 +64,9 @@ def check_connection():
         fieldname=["*"],
         order_by="id_titulaire asc",
         as_dict=1,
-        debug=True,
+        # debug=True,
     )
+    frappe.cbs_db.commit()
 
     # Get Total sum to be transferred
     total_to_transfer = frappe.cbs_db.get_values(
@@ -73,7 +79,7 @@ def check_connection():
         },
         fieldname=["sum(solde)"],
         as_dict=1,
-        debug=True,
+        # debug=True,
     )
 
     # Get Total compulsor sum to be transferred
@@ -87,7 +93,7 @@ def check_connection():
         },
         fieldname=["sum(solde)"],
         as_dict=1,
-        debug=True,
+        # debug=True,
     )
 
     # Get Full Account No:
@@ -103,7 +109,11 @@ def check_connection():
     url = f'http://{frappe.conf.get("api_url")}/api/v1/client/transfert/compte'
 
     # Do the Transfer
+    count = 1
     for account in balances_to_transfer:
+        print(f"{count} of {len(balances_to_transfer)}")
+        count += 1
+
         # Format ID Client to 8 digits with Agence ID
         identifiant_client = f'1{f"{account.id_titulaire}".zfill(ID_CLIENT_LENGTH)}'
 
@@ -119,7 +129,7 @@ def check_connection():
             fieldname=["num_complet_cpte", "solde"],
             order_by="id_titulaire asc",
             as_dict=1,
-            debug=True,
+            # debug=True,
         )
         if not compulsory or len(compulsory) > 1:
             # log clients withtout compulsory
@@ -153,7 +163,6 @@ def check_connection():
 
         # Log response
         json_response = response.json()
-        print(json_response)
 
         # Get transfer Balances
         balances = frappe.cbs_db.get_values(
@@ -166,7 +175,7 @@ def check_connection():
             fieldname=["solde", "id_titulaire", "id_prod"],
             order_by="id_titulaire asc",
             as_dict=1,
-            debug=True,
+            # debug=True,
         )
 
         from_bal = [x["solde"] for x in balances if x["id_prod"] == 1][0]
@@ -196,9 +205,7 @@ def check_connection():
             total_account_transfered += 1
             total_transferred += account.solde
 
-        # Log the Balances
-
-        break
+        # break
 
     total_after_transfer = frappe.cbs_db.get_values(
         "ad_cpt",
@@ -210,7 +217,7 @@ def check_connection():
         },
         fieldname=["sum(solde)"],
         as_dict=1,
-        debug=True,
+        # debug=True,
     )
 
     # Get Total sum to be transferred
@@ -224,7 +231,7 @@ def check_connection():
         },
         fieldname=["sum(solde)"],
         as_dict=1,
-        debug=True,
+        # debug=True,
     )
 
     logs.total_transferred = total_transferred

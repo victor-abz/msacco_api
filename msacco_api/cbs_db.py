@@ -1,25 +1,22 @@
 import re
 
+import frappe
 import psycopg2
 import psycopg2.extensions
-from psycopg2.errorcodes import (
-	CLASS_INTEGRITY_CONSTRAINT_VIOLATION,
-	DEADLOCK_DETECTED,
-	DUPLICATE_COLUMN,
-	INSUFFICIENT_PRIVILEGE,
-	STRING_DATA_RIGHT_TRUNCATION,
-	UNDEFINED_COLUMN,
-	UNDEFINED_TABLE,
-	UNIQUE_VIOLATION,
-)
-from psycopg2.errors import ReadOnlySqlTransaction, SequenceGeneratorLimitExceeded, SyntaxError
+from frappe.utils import cstr, get_table_name
+from psycopg2.errorcodes import (CLASS_INTEGRITY_CONSTRAINT_VIOLATION,
+                                 DEADLOCK_DETECTED, DUPLICATE_COLUMN,
+                                 INSUFFICIENT_PRIVILEGE,
+                                 STRING_DATA_RIGHT_TRUNCATION,
+                                 UNDEFINED_COLUMN, UNDEFINED_TABLE,
+                                 UNIQUE_VIOLATION)
+from psycopg2.errors import (ReadOnlySqlTransaction,
+                             SequenceGeneratorLimitExceeded, SyntaxError)
 from psycopg2.extensions import ISOLATION_LEVEL_REPEATABLE_READ
 
-import frappe
 from msacco_api.database.database import CBSDatabase
 from msacco_api.database.postgres.schema import PostgresTable
 from msacco_api.database.utils import EmptyQueryValues, LazyDecode
-from frappe.utils import cstr, get_table_name
 
 # cast decimals as floats
 DEC2FLOAT = psycopg2.extensions.new_type(
