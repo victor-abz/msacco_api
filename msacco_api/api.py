@@ -1,4 +1,5 @@
 import json
+import time
 
 import frappe
 import requests
@@ -27,6 +28,14 @@ def get_cbs_root_connection(root_login, root_password):
         )
 
     return frappe.local.flags.root_cbs_connection
+
+
+# def check_connection():
+#     starttime = time.time()
+#     for n in range(1, 1):
+#         print(f"executing n {n}")
+#         execute_transfer()
+#         time.sleep(6)
 
 
 def check_connection():
@@ -58,7 +67,7 @@ def check_connection():
         filters={
             "solde": [">", "0"],
             "etat_cpte": 1,
-            "id_prod": 1,
+            "id_prod": ["in", [1]],
             "id_titulaire": ["not in", accounts_in_mob_banking],
         },
         fieldname=["*"],
@@ -69,49 +78,59 @@ def check_connection():
     frappe.cbs_db.commit()
 
     # Get Total sum to be transferred
-    total_to_transfer = frappe.cbs_db.get_values(
-        "ad_cpt",
-        filters={
-            "solde": [">", "0"],
-            "etat_cpte": 1,
-            "id_prod": 1,
-            "id_titulaire": ["not in", accounts_in_mob_banking],
-        },
-        fieldname=["sum(solde)"],
-        as_dict=1,
-        # debug=True,
+    total_to_transfer = sum(
+        item["solde"] for item in balances_to_transfer if item["id_prod"] == 1
     )
+    # comp_balance_before_transfer = sum(
+    #     item["solde"] for item in balances_to_transfer if item["id_prod"] == 7
+    # )
+    # frappe.cbs_db.get_values(
+    #     "ad_cpt",
+    #     filters={
+    #         "solde": [">", "0"],
+    #         "etat_cpte": 1,
+    #         "id_prod": 1,
+    #         "id_titulaire": ["not in", accounts_in_mob_banking],
+    #     },
+    #     fieldname=["sum(solde)"],
+    #     as_dict=1,
+    #     # debug=True,
+    # )
 
-    # Get Total compulsor sum to be transferred
-    comp_balance_before_transfer = frappe.cbs_db.get_values(
-        "ad_cpt",
-        filters={
-            "solde": [">", "0"],
-            "etat_cpte": 1,
-            "id_prod": 7,
-            "id_titulaire": ["not in", accounts_in_mob_banking],
-        },
-        fieldname=["sum(solde)"],
-        as_dict=1,
-        # debug=True,
-    )
+    # # Get Total compulsor sum to be transferred
+    # comp_balance_before_transfer = frappe.cbs_db.get_values(
+    #     "ad_cpt",
+    #     filters={
+    #         "solde": [">", "0"],
+    #         "etat_cpte": 1,
+    #         "id_prod": 7,
+    #         "id_titulaire": ["not in", accounts_in_mob_banking],
+    #     },
+    #     fieldname=["sum(solde)"],
+    #     as_dict=1,
+    #     # debug=True,
+    # )
 
     # Get Full Account No:
     logs = frappe.new_doc("Savings migration Logs")
 
-    logs.total_to_transfer = total_to_transfer[0].sum
+    logs.total_to_transfer = total_to_transfer
     logs.total_accounts_to_transfer = len(balances_to_transfer)
 
-    logs.comp_balance_before = comp_balance_before_transfer[0].sum
+    # logs.comp_balance_before = comp_balance_before_transfer[0].sum
 
     total_account_transfered = 0
     total_transferred = 0
-    url = f'http://{frappe.conf.get("api_url")}/api/v1/client/transfert/compte'
+    url = f'https://{frappe.conf.get("api_url")}/api/v1/client/transfert/compte'
+    print(url)
 
     # Do the Transfer
     count = 1
     for account in balances_to_transfer:
-        print(f"{count} of {len(balances_to_transfer)}")
+        if account.id_prod == 7:
+            print("Skipping the Compulsory saving")
+            continue
+        print(f"{count} of {len(balances_to_transfer)}  --- {account.id_titulaire}")
         count += 1
 
         # Format ID Client to 8 digits with Agence ID
@@ -133,6 +152,24 @@ def check_connection():
         )
         if not compulsory or len(compulsory) > 1:
             # log clients withtout compulsory
+            client_details = frappe.cbs_db.get_values(
+                "ad_cli",
+                filters={
+                    "id_client": account.id_titulaire,
+                },
+                fieldname=["*"],
+                as_dict=1,
+                # debug=True,
+            )[0]
+
+            failed_record = frappe.new_doc("Failed transfers")
+            failed_record.names = f'{client_details.pp_nom} {client_details.pp_prenom}'
+            failed_record.id_client = account.id_titulaire
+            failed_record.account_number = account.num_complet_cpte
+            failed_record.account_solde = account.solde
+            failed_record.insert()
+
+            print("No Compulsory Account")
             continue
         num_compte_cible = compulsory[0].num_complet_cpte
 
@@ -162,6 +199,7 @@ def check_connection():
         )
 
         # Log response
+        print("<><><<><><><><>", response, "<><><<><><><><>")
         json_response = response.json()
 
         # Get transfer Balances
@@ -207,42 +245,43 @@ def check_connection():
 
         # break
 
-    total_after_transfer = frappe.cbs_db.get_values(
-        "ad_cpt",
-        filters={
-            "solde": [">", "0"],
-            "etat_cpte": 1,
-            "id_prod": 1,
-            "id_titulaire": ["not in", accounts_in_mob_banking],
-        },
-        fieldname=["sum(solde)"],
-        as_dict=1,
-        # debug=True,
-    )
+    # total_after_transfer = frappe.cbs_db.get_values(
+    #     "ad_cpt",
+    #     filters={
+    #         "solde": [">", "0"],
+    #         "etat_cpte": 1,
+    #         "id_prod": 1,
+    #         "id_titulaire": ["not in", accounts_in_mob_banking],
+    #     },
+    #     fieldname=["sum(solde)"],
+    #     as_dict=1,
+    #     limit="100"
+    #     # debug=True,
+    # )
 
-    # Get Total sum to be transferred
-    comp_balance_after_transfer = frappe.cbs_db.get_values(
-        "ad_cpt",
-        filters={
-            "solde": [">", "0"],
-            "etat_cpte": 1,
-            "id_prod": 7,
-            "id_titulaire": ["not in", accounts_in_mob_banking],
-        },
-        fieldname=["sum(solde)"],
-        as_dict=1,
-        # debug=True,
-    )
+    # # Get Total sum to be transferred
+    # comp_balance_after_transfer = frappe.cbs_db.get_values(
+    #     "ad_cpt",
+    #     filters={
+    #         "solde": [">", "0"],
+    #         "etat_cpte": 1,
+    #         "id_prod": 7,
+    #         "id_titulaire": ["not in", accounts_in_mob_banking],
+    #     },
+    #     fieldname=["sum(solde)"],
+    #     as_dict=1,
+    #     # debug=True,
+    # )
 
     logs.total_transferred = total_transferred
     logs.total_account_transfered = total_account_transfered
-    logs.balance_after_transfer = total_after_transfer[0].sum
-    logs.comp_balance_after_transfer = comp_balance_after_transfer[0].sum
+    # logs.balance_after_transfer = total_after_transfer[0].sum
+    # logs.comp_balance_after_transfer = comp_balance_after_transfer[0].sum
 
-    logs.epargne_diff = total_after_transfer[0].sum - total_to_transfer[0].sum
-    logs.comp_diff = (
-        comp_balance_after_transfer[0].sum - comp_balance_before_transfer[0].sum
-    )
+    # logs.epargne_diff = total_after_transfer[0].sum - total_to_transfer[0].sum
+    # logs.comp_diff = (
+    #     comp_balance_after_transfer[0].sum - comp_balance_before_transfer[0].sum
+    # )
     logs.insert()
 
     root_conn.close()
